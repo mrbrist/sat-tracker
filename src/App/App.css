@@ -1,0 +1,25 @@
+.App {
+  text-align: center;
+}
+
+.map {
+  width: 100vw;
+  height: 100vh;
+}
+
+.satIcon {
+  font-size: 50px;
+  cursor: pointer;
+}
+
+.alive {
+  color: rgb(0, 150, 0);
+}
+
+.dead {
+  color: red;
+}
+
+.notfound {
+  color: orange;
+}
