@@ -23,3 +23,15 @@
 .notfound {
   color: orange;
 }
+
+.satMarker {
+  width: 10vw;
+}
+
+.satName {
+  color: black;
+  font-weight: bold;
+  padding: 5px;
+  font-size: large;
+  display: block;
+}

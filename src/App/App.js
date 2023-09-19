@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios'
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Dialog, DialogContent, DialogTitle, DialogActions, Button, Grid, Typography, TextField, AppBar, Toolbar, Autocomplete } from '@mui/material';
@@ -17,23 +18,34 @@ const darkTheme = createTheme({
 
 const App = () => {
   const [data, setData] = useState();
+  const [selectedData, setSelectedData] = useState();
   const [popup, setPopup] = useState(false);
-  const [id, setId] = useState(25544);
+  const [objects, setObjects] = useState([25544, 20580]);
 
   useEffect(() => {
-    fetch(`rest/v1/satellite/positions/${id}/41.702/-76.014/0/2&apiKey=UU6K2M-9GE4WA-DSB4BX-542I`, {
-      method: "GET",
-      mode: "no-cors"
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setData(data)
-        console.log(data);
-      })
-      .catch((error) => console.log(error));
-  }, [id]);
+    const refresh = () => {
+      const newData = []
+      const promises = objects.map(e => axios.get(`https://cors-proxy.fringe.zone/https://api.n2yo.com/rest/v1/satellite/positions/${e}/41.702/-76.014/0/2&apiKey=UU6K2M-9GE4WA-DSB4BX-542I`))
+      Promise.all(promises).then(function (res) {
+        res.forEach(obj => {
+          newData.push(obj.data)
+        })
+        setData(newData)
+      });
+    }
 
-  const handleClickOpen = () => {
+    refresh()
+
+    const interval1 = setInterval(() => {
+      refresh()
+    }, 30 * 1000); // Every 30 seconds
+    return () => clearInterval(interval1);
+
+  }, [objects]);
+
+  const handleClickOpen = (sat) => {
+    console.log(sat);
+    setSelectedData(sat)
     setPopup(true);
   }
 
@@ -41,12 +53,12 @@ const App = () => {
     setPopup(false);
   };
 
-  const calculateSpeed = () => {
-    const lat1 = data?.positions[0].satlatitude
-    const lon1 = data?.positions[0].satlongitude
-    const lat2 = data?.positions[1].satlatitude
-    const lon2 = data?.positions[1].satlongitude
-    const alt = data?.positions[0].sataltitude
+  const calculateSpeed = (data) => {
+    const lat1 = data.positions[0].satlatitude
+    const lon1 = data.positions[0].satlongitude
+    const lat2 = data.positions[1].satlatitude
+    const lon2 = data.positions[1].satlongitude
+    const alt = data.positions[0].sataltitude
     const distance = getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2, alt)
 
     return Math.round(distance * 100) / 100
@@ -73,51 +85,49 @@ const App = () => {
             >
               Satellite Tracker
             </Typography>
-            {/* <TextField variant="outlined" label="Search" margin="normal" onKeyPress={event => {
-              if (event.key === 'Enter') {
-                if (event.target.value.match(/[0-9]/)) {
-                  setId(event.target.value)
-                }
-              }
-            }} /> */}
             <Autocomplete
               disablePortal
+              multiple
               options={sats}
               getOptionLabel={(option) => option.label ?? option}
-              sx={{ width: 300 }}
               renderInput={(params) => <TextField {...params} label="Search" margin="normal" />}
+              defaultValue={[sats[67], sats[24]]}
               onChange={(event, newValue) => {
+                console.log(newValue);
                 if (newValue) {
-                  setId(newValue.id)
+                  const array = []
+                  newValue.forEach(e => {
+                    array.push(e.id)
+                  });
+                  setObjects(array)
                 }
               }}
             />
           </Toolbar>
         </AppBar>
+        {data ? (<Map data={data} click={handleClickOpen} status={data[0]?.info.satname && data[0]?.positions[0].sataltitude === 0 ? ("dead") : (data[0]?.info.satname ? ("alive") : ("notfound"))} />) : "loading"}
 
-        {data ? (<Map data={data} click={handleClickOpen} status={data?.info.satname && data?.positions[0].sataltitude === 0 ? ("dead") : (data?.info.satname ? ("alive") : ("notfound"))} />) : "loading"}
-
-        {popup ? (
+        {popup && selectedData ? (
           <Dialog open={popup} onClose={handleClose}>
-            <DialogTitle>{data?.info.satname ? (data?.info.satname) : ("Not Found")}</DialogTitle>
+            <DialogTitle>{selectedData?.info.satname ? (selectedData?.info.satname) : ("Not Found")}</DialogTitle>
             <DialogContent>
-              {data?.info.satname && data?.positions[0].sataltitude === 0 ? ("Decayed") : (
+              {selectedData?.info.satname && selectedData?.positions[0].sataltitude === 0 ? ("Decayed") : (
                 <Grid container spacing={4} >
                   <Grid item xs={6}>
                     <Typography variant="subtitle1" component="h2">Altitude</Typography>
-                    <Typography display="inline-block" variant="h4" component="h2">{Math.round(data?.positions[0].sataltitude)}</Typography> <Typography display="inline-block" variant="h6" component="h2">Km</Typography>
+                    <Typography display="inline-block" variant="h4" component="h2">{Math.round(selectedData?.positions[0].sataltitude)}</Typography> <Typography display="inline-block" variant="h6" component="h2">Km</Typography>
                   </Grid>
                   <Grid item xs={6}>
                     <Typography variant="subtitle1" component="h2">Speed</Typography>
-                    <Typography display="inline-block" variant="h4" component="h2">{data?.info.satname ? (calculateSpeed()) : ("0")}</Typography> <Typography display="inline-block" variant="h6" component="h2">Km/s</Typography>
+                    <Typography display="inline-block" variant="h4" component="h2">{selectedData?.info.satname ? (calculateSpeed(selectedData)) : ("0")}</Typography> <Typography display="inline-block" variant="h6" component="h2">Km/s</Typography>
                   </Grid>
                   <Grid item xs={6}>
                     <Typography variant="subtitle1" component="h2">Latitude</Typography>
-                    <Typography variant="h4" component="h2">{data?.positions[0].satlatitude}</Typography>
+                    <Typography variant="h4" component="h2">{selectedData?.positions[0].satlatitude}</Typography>
                   </Grid>
                   <Grid item xs={6}>
                     <Typography variant="subtitle1" component="h2">Longitude</Typography>
-                    <Typography variant="h4" component="h2">{data?.positions[0].satlongitude}</Typography>
+                    <Typography variant="h4" component="h2">{selectedData?.positions[0].satlongitude}</Typography>
                   </Grid>
                 </Grid>
               )}

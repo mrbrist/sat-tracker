@@ -1,16 +1,12 @@
 import { Icon } from '@iconify/react'
 import satIcon from '@iconify/icons-mdi/satellite-variant'
-import notFoundIcon from '@iconify/icons-mdi/question-mark'
 
-const SatMarker = ({ lat, lng, click, status }) => {
+const SatMarker = ({ lat, lng, data, click, status }) => {
     return (
-        <div className='satMarker' onClick={() => { click() }}>
-            {status === "notfound" ?
-                (<Icon icon={notFoundIcon} className="satIcon notfound" />) : (
-                    status === "dead" ? (<Icon icon={satIcon} className="satIcon dead" />) :
-                        (<Icon icon={satIcon} className="satIcon alive" />)
-                )}
-        </div>
+        <div className='satMarker' onClick={() => { click(data) }}>
+            <span className="satName">{data.info.satname}</span>
+            <Icon icon={satIcon} className="satIcon alive" />
+        </div >
     )
 }
 

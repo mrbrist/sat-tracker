@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import GoogleMap from 'google-maps-react-markers'
 
 import SatMarker from './SatMarker';
@@ -11,9 +11,6 @@ const Map = ({ data, click, status }) => {
         },
         zoom: 2.5
     }
-
-    const position = data?.positions[0]
-
     return (
         <div className="map">
             <GoogleMap
@@ -21,9 +18,9 @@ const Map = ({ data, click, status }) => {
                 defaultCenter={defaultProps.center}
                 defaultZoom={defaultProps.zoom}
             >
-                {position ? (
-                    <SatMarker lat={position.satlatitude} lng={position.satlongitude} click={click} status={status} />
-                ) : (null)}
+                {data?.map(sat => (
+                    <SatMarker lat={sat?.positions[0].satlatitude} lng={sat?.positions[0].satlongitude} data={sat} click={click} status={status} />
+                ))}
             </GoogleMap>
         </div>
     );
