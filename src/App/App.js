@@ -26,13 +26,12 @@ const App = () => {
     const refresh = () => {
       const newData = [];
       const promises = objects.map(e =>
-        axios.get(`https://proxy.corsfix.com/?https://api.n2yo.com/rest/v1/satellite/positions/${e}/41.702/-76.014/0/2&apiKey=UU6K2M-9GE4WA-DSB4BX-542I`)
+        axios.get(`https://celestrak.org/NORAD/elements/gp.php?CATNR=${e}&FORMAT=TLE`)
       );
       Promise.all(promises).then(function (res) {
         res.forEach(obj => {
           newData.push(obj.data);
         });
-        console.log(newData);
         setData(newData);
       });
     };
@@ -107,29 +106,29 @@ const App = () => {
             />
           </Toolbar>
         </AppBar>
-        {data ? (<Map data={data} click={handleClickOpen} status={data[0]?.info.satname && data[0]?.positions[0].sataltitude === 0 ? ("dead") : (data[0]?.info.satname ? ("alive") : ("notfound"))} />) : "loading"}
+        {data ? (<Map data={data} click={handleClickOpen} status="alive" />) : "loading"}
 
         {popup && selectedData ? (
           <Dialog open={popup} onClose={handleClose}>
-            <DialogTitle>{selectedData?.info.satname ? (selectedData?.info.satname) : ("Not Found")}</DialogTitle>
+            <DialogTitle>{selectedData?.name ? (selectedData?.name) : ("Not Found")}</DialogTitle>
             <DialogContent>
-              {selectedData?.info.satname && selectedData?.positions[0].sataltitude === 0 ? ("Decayed") : (
+              {selectedData?.name && selectedData?.sataltitude === 0 ? ("Decayed") : (
                 <Grid container spacing={4} >
                   <Grid item xs={6}>
                     <Typography variant="subtitle1" component="h2">Altitude</Typography>
-                    <Typography display="inline-block" variant="h4" component="h2">{Math.round(selectedData?.positions[0].sataltitude)}</Typography> <Typography display="inline-block" variant="h6" component="h2">Km</Typography>
+                    <Typography display="inline-block" variant="h4" component="h2">{Math.round(selectedData?.sataltitude)}</Typography> <Typography display="inline-block" variant="h6" component="h2">Km</Typography>
                   </Grid>
                   <Grid item xs={6}>
                     <Typography variant="subtitle1" component="h2">Speed</Typography>
-                    <Typography display="inline-block" variant="h4" component="h2">{selectedData?.info.satname ? (calculateSpeed(selectedData)) : ("0")}</Typography> <Typography display="inline-block" variant="h6" component="h2">Km/s</Typography>
+                    <Typography display="inline-block" variant="h4" component="h2">{selectedData?.velocity}</Typography> <Typography display="inline-block" variant="h6" component="h2">Km/s</Typography>
                   </Grid>
                   <Grid item xs={6}>
                     <Typography variant="subtitle1" component="h2">Latitude</Typography>
-                    <Typography variant="h4" component="h2">{selectedData?.positions[0].satlatitude}</Typography>
+                    <Typography variant="h4" component="h2">{selectedData?.satlatitude}</Typography>
                   </Grid>
                   <Grid item xs={6}>
                     <Typography variant="subtitle1" component="h2">Longitude</Typography>
-                    <Typography variant="h4" component="h2">{selectedData?.positions[0].satlongitude}</Typography>
+                    <Typography variant="h4" component="h2">{selectedData?.satlongitude}</Typography>
                   </Grid>
                 </Grid>
               )}
