@@ -1,14 +1,17 @@
-import React from 'react'; // Added React import
-import { Icon } from '@iconify/react'
-import satIcon from '@iconify/icons-mdi/satellite-variant'
+import React from 'react';
+import { Marker } from '@react-google-maps/api';
 
 const SatMarker = ({ lat, lng, data, click, status }) => {
     return (
-        <div className='satMarker' onClick={() => { click(data) }}>
-            <span className="satName">{data.info.satname}</span>
-            <Icon icon={satIcon} className="satIcon alive" />
-        </div >
-    )
-}
+        <Marker
+            position={{ lat, lng }}
+            onClick={() => click(data)}
+            icon={{
+                url: '/sat.png', // Replace with the path to your custom icon
+                scaledSize: new window.google.maps.Size(40, 40), // Adjust size as needed
+            }}
+        />
+    );
+};
 
-export default SatMarker
+export default SatMarker;

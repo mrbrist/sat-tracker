@@ -1,7 +1,6 @@
 import React from 'react';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
-
-// import SatMarker from './SatMarker';
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import SatMarker from './SatMarker';
 
 const Map = ({ data, click, status }) => {
     const defaultProps = {
@@ -12,35 +11,34 @@ const Map = ({ data, click, status }) => {
         zoom: 2.5
     };
 
+    const { isLoaded } = useJsApiLoader({
+        googleMapsApiKey: "AIzaSyD_gaH-BnlRksIo_GJTmbQ-2uwn9i80S7o"
+    });
+
+    if (!isLoaded) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <div className="map">
-            <LoadScript googleMapsApiKey="AIzaSyD_gaH-BnlRksIo_GJTmbQ-2uwn9i80S7o">
-                <GoogleMap
-                    center={defaultProps.center}
-                    zoom={defaultProps.zoom}
-                    mapContainerStyle={{ height: "100vh", width: "100%" }}
-                >
-                    <Marker
-                            key="90"
-                            position={{
-                                lat: 50,
-                                lng: 50
-                            }}
-                            // onClick={() => click(sat)}
-                        />
-                    {/* {data?.map(sat => (
-                    // <SatMarker lat={sat?.positions[0].satlatitude} lng={sat?.positions[0].satlongitude} data={sat} click={click} status={status} />
-                        <Marker
-                            key={sat?.info.satname}
-                            position={{
-                                lat: 50,
-                                lng: 50
-                            }}
-                            onClick={() => click(sat)}
-                        />
-                    ))} */}
-                </GoogleMap>
-            </LoadScript>
+            <GoogleMap
+                center={defaultProps.center}
+                zoom={defaultProps.zoom}
+                mapContainerStyle={{ height: "100vh", width: "100%" }}
+                onLoad={() => console.log("Map loaded successfully")}
+                onError={(e) => console.error("Map failed to load", e)}
+            >
+                {data?.map(sat => (
+                    <SatMarker
+                        key={sat?.info.satname}
+                        lat={sat?.positions[0]?.satlatitude}
+                        lng={sat?.positions[0]?.satlongitude}
+                        data={sat}
+                        click={click}
+                        status={status}
+                    />
+                ))}
+            </GoogleMap>
         </div>
     );
 };

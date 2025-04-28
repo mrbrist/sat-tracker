@@ -26,13 +26,13 @@ const App = () => {
     const refresh = () => {
       const newData = [];
       const promises = objects.map(e =>
-        axios.get(`https://api.n2yo.com/rest/v1/satellite/positions/${e}/41.702/-76.014/0/2&apiKey=UU6K2M-9GE4WA-DSB4BX-542I`)
+        axios.get(`https://proxy.corsfix.com/?https://api.n2yo.com/rest/v1/satellite/positions/${e}/41.702/-76.014/0/2&apiKey=UU6K2M-9GE4WA-DSB4BX-542I`)
       );
       Promise.all(promises).then(function (res) {
         res.forEach(obj => {
           newData.push(obj.data);
         });
-
+        console.log(newData);
         setData(newData);
       });
     };
