@@ -6,27 +6,25 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@iconify/icons-mdi": "^1.2.47",
-    "@iconify/react": "^4.1.1",
-    "@mui/material": "^5.14.7",
-    "@react-google-maps/api": "^2.19.2",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "axios": "^1.5.0",
+    "@iconify/icons-mdi": "^1.2.48",
+    "@iconify/react": "^5.2.1",
+    "@mui/material": "^5.15.0",
+    "@react-google-maps/api": "^2.20.0",
+    "axios": "^1.6.0",
     "fetch": "^1.1.0",
     "google-map-react": "^2.2.1",
-    "google-maps-react-markers": "^1.4.2",
+    "google-maps-react-markers": "^2.0.15",
+    "http-proxy-middleware": "^3.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "react-scripts": "^3.0.1",
+    "web-vitals": "^3.0.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
+    "test": "NODE_OPTIONS=--openssl-legacy-provider react-scripts test",
+    "eject": "NODE_OPTIONS=--openssl-legacy-provider react-scripts eject",
     "parse": "node ./parse/parse.js",
     "deploy": "gh-pages -d build"
   },
@@ -49,6 +47,6 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^6.0.0"
+    "gh-pages": "^6.3.0"
   }
 }

@@ -4,7 +4,7 @@ import axios from 'axios'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Dialog, DialogContent, DialogTitle, DialogActions, Button, Grid, Typography, TextField, AppBar, Toolbar, Autocomplete } from '@mui/material';
 
-import Map from 'C:/dev/sat-tracker/src/components/Map.js'
+import Map from '../components/Map.js'
 
 import './App.css';
 
@@ -24,23 +24,25 @@ const App = () => {
 
   useEffect(() => {
     const refresh = () => {
-      const newData = []
-      const promises = objects.map(e => axios.get(`https://cors-proxy.fringe.zone/https://api.n2yo.com/rest/v1/satellite/positions/${e}/41.702/-76.014/0/2&apiKey=UU6K2M-9GE4WA-DSB4BX-542I`))
+      const newData = [];
+      const promises = objects.map(e =>
+        axios.get(`https://api.n2yo.com/rest/v1/satellite/positions/${e}/41.702/-76.014/0/2&apiKey=UU6K2M-9GE4WA-DSB4BX-542I`)
+      );
       Promise.all(promises).then(function (res) {
         res.forEach(obj => {
-          newData.push(obj.data)
-        })
-        setData(newData)
-      });
-    }
+          newData.push(obj.data);
+        });
 
-    refresh()
+        setData(newData);
+      });
+    };
+
+    refresh();
 
     const interval1 = setInterval(() => {
-      refresh()
+      refresh();
     }, 30 * 1000); // Every 30 seconds
     return () => clearInterval(interval1);
-
   }, [objects]);
 
   const handleClickOpen = (sat) => {

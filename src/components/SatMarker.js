@@ -1,3 +1,4 @@
+import React from 'react'; // Added React import
 import { Icon } from '@iconify/react'
 import satIcon from '@iconify/icons-mdi/satellite-variant'
 
